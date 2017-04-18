@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+
+  "name": "Lerner Dash",
+  "description": "Useful links / content for CCLCM students",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon" : "images/icon-256.png",
+    "default_popup": "popup.html",
+    "default_title": "Click to open menu"
+  },
+
+  "background":{
+    "persistent": false,
+    "scripts"   :["vendor/jquery-3.1.1.min.js","background.js"]
+  },
+  "commands":{
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      }
+    }
+  },
+
+  "permissions": [
+    "tabs",
+    "https://ajax.googleapis.com/*",
+    "contextMenus",
+    "storage",
+    "*://*.library.ccf.org/*"
+  ],
+
+  "icons":{
+    "16": "images/icon-16.png",
+    "256":"images/icon-256.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["vendor/jquery-3.1.1.min.js","sendHtml.js"]
+    },
+    {
+      "matches": ["https://login.ccmain.ohionet.org/login?url=*","https://library.ccf.org/wamvalidate?url=*", "https://login.ccmain.ohionet.org/login?qurl=*"],
+      "js": ["vendor/jquery-3.1.1.min.js","login.js"],
+      "run_at":"document_end"
+    },
+    {
+      "matches":["<all_urls>"],
+      "js":["vendor/jquery-3.1.1.min.js","library_content_validation.js"],
+      "exclude_globs":["*library.ccf.org*", "*.ccf.org*","*.gov*","*ccmain.ohionet.org*", "*google.com*", "*jamanetwork.com*"]
+    }
+  ]
+}

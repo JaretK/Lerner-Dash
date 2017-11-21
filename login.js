@@ -31,6 +31,7 @@ function loginOther(response){
 }
 
 function loginNewPage(response){
+  console.log("Trying new login protocol");
   var lname = response.lname,
   fname = response.fname,
   emp   = response.emp,
@@ -40,24 +41,38 @@ function loginNewPage(response){
   $('input[value="Employee ID"]').val(emp);
   $('input[value="Password"]').attr("type","password");
   $('input[value="Password"]').val(pass);
-  $('input[value="Sign in"]').click();
-  //clinical-key defaults to homepage instead of requested page (bad design imo)
-  var decodedLoc = urlloc.substring(newPage.length);
-  if (decodedLoc.includes("clinicalkey")){
-    navigateToClinicalKey(decodedLoc);
+  var filled = $('input[value="Last Name"]').val() && $('input[value="Employee ID"]').val() && $('input[value="Password"]').val();
+  if (filled){
+    $('input[value="Sign in"]').click();
+    //clinical-key defaults to homepage instead of requested page (bad design imo)
+    var decodedLoc = urlloc.substring(newPage.length);
+    if (decodedLoc.includes("clinicalkey")){
+      navigateToClinicalKey(decodedLoc);
+    }
   }
+  else{
+    //some clinicalkey pages have the old format
+    console.log("New protocol failed. Fallback to old protocol");
+    loginAccess(response);
+  }
+
 }
 //callback not needed
 function loginAccess(response){
+  console.log("Trying old login protocol");
   var lname = response.lname,
   fname = response.fname,
   emp   = response.emp,
   pass  = response.pass;
   var urlloc = window.location.href;
-  $('#name').val(lname+", "+fname);
-  $('#code').val(emp);
-  $('#pin').val(pass);
-  $('input[value="submit"]').click();
+  $('input[name="name"]').val(lname+", "+fname);
+  $('input[name="code"]').val(emp);
+  $('input[name="pin"]').val(pass);
+  var filled = $('input[name="name"]').val() && $('input[name="code"]').val() && $('input[name="pin"]').val();
+  console.log(filled);
+  if (filled){
+    $('input[value="submit"]').click();
+  }
 }
 
 function navigateToClinicalKey(url){
